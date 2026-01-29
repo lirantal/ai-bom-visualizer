@@ -57,7 +57,7 @@ export default function App() {
   return (
     <div className="h-screen w-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="h-14 border-b border-border/50 flex items-center justify-between px-4 bg-card/30 backdrop-blur-md">
+      <header className="h-14 border-b border-border/50 flex items-center justify-between px-4 bg-card/30 backdrop-blur-md relative z-50">
         <div className="flex items-center gap-4">
           {/* Evo Logo */}
           <div className="flex items-center gap-2.5">
