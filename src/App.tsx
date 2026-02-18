@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Filter, Code2, Maximize2, Search, ChevronDown } from 'lucide-react';
-import { ConstellationGraph } from './components/constellation-graph';
+import { ConstellationGraph, type ConstellationGraphHandle } from './components/constellation-graph';
 import { NodeDetailPanel } from './components/node-detail-panel';
 import { type GraphNode, bomData, graphData } from './lib/graph-data';
 
@@ -43,6 +43,7 @@ export default function App() {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const graphRef = useRef<ConstellationGraphHandle>(null);
 
   const filters = [
     { id: 'all', label: 'All Components' },
@@ -116,7 +117,10 @@ export default function App() {
           </div>
 
           {/* Zoom to fit */}
-          <button className="h-8 px-3 bg-secondary/40 hover:bg-secondary/60 border border-border/50 rounded-md text-sm text-foreground flex items-center gap-2 transition-colors">
+          <button
+            onClick={() => graphRef.current?.zoomToFit()}
+            className="h-8 px-3 bg-secondary/40 hover:bg-secondary/60 border border-border/50 rounded-md text-sm text-foreground flex items-center gap-2 transition-colors"
+          >
             <Maximize2 className="w-3.5 h-3.5" />
             <span className="hidden sm:inline text-foreground/80">Zoom to Fit</span>
           </button>
@@ -140,7 +144,8 @@ export default function App() {
       <div className="flex-1 flex overflow-hidden">
         {/* Graph area */}
         <main className="flex-1 relative">
-          <ConstellationGraph 
+          <ConstellationGraph
+            ref={graphRef}
             onNodeSelect={setSelectedNode}
             selectedNodeId={selectedNode?.id || null}
             filter={filter}
