@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { graphData, nodeTypeConfig, type GraphNode, type NodeType } from '../lib/graph-data';
+import { constellationRingOrder, graphData, nodeTypeConfig, type GraphNode, type NodeType } from '../lib/graph-data';
 import { fuzzyMatchAny } from '../lib/fuzzy-match';
 
 interface NodePosition {
@@ -86,15 +86,18 @@ export const ConstellationGraph = forwardRef<ConstellationGraphHandle, {
       });
     }
 
-    // Position other nodes in orbital rings
-    const typeOrder: NodeType[] = ['mcp-client', 'mcp-server', 'agent', 'model', 'library', 'service', 'mcp-resource', 'tool', 'data'];
-    let ringIndex = 0;
-    
-    typeOrder.forEach(type => {
+    // Position other nodes in orbital rings. Each type has a canonical ring index
+    // (from constellationRingOrder) so that filtering to one type keeps nodes on the same circle.
+    const typeToRingIndex: Record<string, number> = {};
+    constellationRingOrder.forEach((type, idx) => { typeToRingIndex[type] = idx + 1; });
+    // Application (non-root) uses the ring after the last constellation ring
+    const applicationRingIndex = constellationRingOrder.length + 1;
+
+    constellationRingOrder.forEach(type => {
       const nodes = nodesByType[type]?.filter(n => n !== rootNode);
       if (!nodes?.length) return;
-      
-      ringIndex++;
+
+      const ringIndex = typeToRingIndex[type];
       const ringRadius = 80 + ringIndex * 90;
       const angleStep = (2 * Math.PI) / Math.max(nodes.length, 6);
       const startAngle = (ringIndex * Math.PI) / 7;
@@ -112,10 +115,10 @@ export const ConstellationGraph = forwardRef<ConstellationGraphHandle, {
       });
     });
 
-    // Add any application nodes that aren't root
+    // Add any application nodes that aren't root (canonical ring after typeOrder types)
     const otherApps = nodesByType['application']?.filter(n => n !== rootNode);
     if (otherApps?.length) {
-      ringIndex++;
+      const ringIndex = applicationRingIndex;
       const ringRadius = 80 + ringIndex * 90;
       const angleStep = (2 * Math.PI) / Math.max(otherApps.length, 6);
       const startAngle = (ringIndex * Math.PI) / 7;
@@ -192,30 +195,36 @@ export const ConstellationGraph = forwardRef<ConstellationGraphHandle, {
     ctx.scale(zoom, zoom);
     ctx.translate(-dimensions.width / 2 + pan.x, -dimensions.height / 2 + pan.y);
 
-    // Draw subtle grid
+    // Draw subtle grid (large enough to cover all orbital rings)
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const maxRingRadius = 80 + 8 * 90;
+    const gridExtent = maxRingRadius + 160;
+    const gridMinX = centerX - gridExtent;
+    const gridMaxX = centerX + gridExtent;
+    const gridMinY = centerY - gridExtent;
+    const gridMaxY = centerY + gridExtent;
     ctx.strokeStyle = 'rgba(255,255,255,0.03)';
     ctx.lineWidth = 1;
-    for (let i = 0; i < dimensions.width; i += 40) {
+    for (let x = gridMinX; x <= gridMaxX; x += 40) {
       ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, dimensions.height);
+      ctx.moveTo(x, gridMinY);
+      ctx.lineTo(x, gridMaxY);
       ctx.stroke();
     }
-    for (let i = 0; i < dimensions.height; i += 40) {
+    for (let y = gridMinY; y <= gridMaxY; y += 40) {
       ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(dimensions.width, i);
+      ctx.moveTo(gridMinX, y);
+      ctx.lineTo(gridMaxX, y);
       ctx.stroke();
     }
 
-    // Draw orbital rings
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
+    // Draw orbital rings (opacity tuned so rings are visible but not dominant)
     for (let i = 1; i <= 8; i++) {
       const radius = 80 + i * 90;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,255,255,${0.04 - i * 0.004})`;
+      ctx.strokeStyle = `rgba(255,255,255,${Math.max(0.06, 0.18 - i * 0.015)})`;
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -514,16 +523,20 @@ export const ConstellationGraph = forwardRef<ConstellationGraphHandle, {
         </button>
       </div>
 
-      {/* Legend */}
+      {/* Legend: ordered by constellation ring (inner to outer), then application */}
       <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm rounded-lg p-3 border border-border/50">
         <div className="text-xs text-muted-foreground mb-2">Components</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-          {Object.entries(nodeTypeConfig).map(([type, config]) => (
-            <div key={type} className="flex items-center gap-2 text-xs">
-              <span style={{ color: config.color }}>{config.icon}</span>
-              <span className="text-foreground/70">{config.label}</span>
-            </div>
-          ))}
+          {([...constellationRingOrder, 'application'] as NodeType[]).map(type => {
+            const config = nodeTypeConfig[type];
+            if (!config) return null;
+            return (
+              <div key={type} className="flex items-center gap-2 text-xs">
+                <span style={{ color: config.color }}>{config.icon}</span>
+                <span className="text-foreground/70">{config.label}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
