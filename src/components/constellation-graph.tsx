@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { graphData, nodeTypeConfig, type GraphNode, type NodeType } from '../lib/graph-data';
 import { fuzzyMatchAny } from '../lib/fuzzy-match';
 
@@ -11,17 +11,21 @@ interface NodePosition {
   radius: number;
 }
 
-export function ConstellationGraph({ 
-  onNodeSelect,
-  selectedNodeId,
-  filter,
-  searchQuery = ''
-}: { 
+export interface ConstellationGraphHandle {
+  zoomToFit: () => void;
+}
+
+export const ConstellationGraph = forwardRef<ConstellationGraphHandle, {
   onNodeSelect: (node: GraphNode | null) => void;
   selectedNodeId: string | null;
   filter: string;
   searchQuery?: string;
-}) {
+}>(function ConstellationGraph({
+  onNodeSelect,
+  selectedNodeId,
+  filter,
+  searchQuery = ''
+}, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
@@ -446,6 +450,35 @@ export function ConstellationGraph({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Expose zoomToFit to parent (e.g. header button)
+  useImperativeHandle(ref, () => ({
+    zoomToFit() {
+      if (nodePositions.length === 0) return;
+      const padding = 80;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      nodePositions.forEach(pos => {
+        const isRoot = pos.node.type === 'application' && pos.node.id.includes('Root');
+        const r = isRoot ? 28 : 20;
+        minX = Math.min(minX, pos.x - r);
+        minY = Math.min(minY, pos.y - r);
+        maxX = Math.max(maxX, pos.x + r);
+        maxY = Math.max(maxY, pos.y + r);
+      });
+      const w = maxX - minX + 2 * padding;
+      const h = maxY - minY + 2 * padding;
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+      const zoomX = dimensions.width / w;
+      const zoomY = dimensions.height / h;
+      const newZoom = Math.min(Math.max(Math.min(zoomX, zoomY), 0.3), 3);
+      setPan({
+        x: dimensions.width / 2 - centerX,
+        y: dimensions.height / 2 - centerY,
+      });
+      setZoom(newZoom);
+    },
+  }), [nodePositions, dimensions]);
+
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden">
       <canvas
@@ -495,4 +528,4 @@ export function ConstellationGraph({
       </div>
     </div>
   );
-}
+});
