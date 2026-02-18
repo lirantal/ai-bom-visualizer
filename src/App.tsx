@@ -4,38 +4,8 @@ import { ConstellationGraph, type ConstellationGraphHandle } from './components/
 import { NodeDetailPanel } from './components/node-detail-panel';
 import { type GraphNode, bomData, graphData } from './lib/graph-data';
 
-// Snyk Evo Logo Component
-function EvoLogo({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" fill="none" className={className}>
-      <path
-        d="M16 4L8 8.5V15.5L16 20L24 15.5V8.5L16 4Z"
-        stroke="url(#evo-gradient)"
-        strokeWidth="1.5"
-        fill="none"
-      />
-      <path
-        d="M8 15.5L16 20V27L8 22.5V15.5Z"
-        stroke="url(#evo-gradient)"
-        strokeWidth="1.5"
-        fill="none"
-      />
-      <path
-        d="M24 15.5L16 20V27L24 22.5V15.5Z"
-        stroke="url(#evo-gradient)"
-        strokeWidth="1.5"
-        fill="none"
-      />
-      <defs>
-        <linearGradient id="evo-gradient" x1="8" y1="4" x2="24" y2="27" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#c084fc" />
-          <stop offset="0.5" stopColor="#ec4899" />
-          <stop offset="1" stopColor="#f97316" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
+const EVO_LOGO_DARK_URL =
+  'https://res.cloudinary.com/snyk/image/upload/snyk-mktg-brandui/brand-logos/evo-logo-dark-mode.svg';
 
 export default function App() {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
@@ -71,14 +41,12 @@ export default function App() {
       {/* Header */}
       <header className="h-14 border-b border-border/50 flex items-center justify-between px-4 bg-card/30 backdrop-blur-md relative z-50">
         <div className="flex items-center gap-4">
-          {/* Evo Logo */}
-          <div className="flex items-center gap-2.5">
-            <EvoLogo className="w-7 h-7" />
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-foreground tracking-tight">evo</span>
-              <span className="text-[10px] text-muted-foreground -mt-0.5 tracking-wide">by snyk</span>
-            </div>
-          </div>
+          {/* Evo by Snyk Logo (official from evo.ai.snyk.io) */}
+          <img
+            src={EVO_LOGO_DARK_URL}
+            alt="Evo by Snyk"
+            className="h-8 w-auto object-contain"
+          />
           
           <div className="h-6 w-px bg-border/50" />
           
