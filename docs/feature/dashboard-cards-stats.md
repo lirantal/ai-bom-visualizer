@@ -11,12 +11,14 @@ The overlay in the **top-left** of the graph shows summary cards with live count
 
 1. **Components (first card)**  
    - **Value:** Total number of graph nodes (all components + services from the BOM).  
-   - **Meaning:** Same as `graphData.nodes.length`; every node in the constellation is counted.
+   - **Meaning:** Same as `graphData.nodes.length`; every node in the constellation is counted.  
+   - **Not clickable:** This card is for the total only; clicking it does nothing.
 
 2. **Type cards (one per type present in the data)**  
    - **Value:** Count of nodes of that type (e.g. number of models, agents, MCP servers, etc.).  
    - **Label:** The display name for the type (e.g. “Model”, “Agent”, “MCP Server”, “Library”) from `nodeTypeConfig` in `src/lib/graph-data.ts`.  
-   - **Color:** The number uses the same color as that type in the graph and in the Components legend (from `nodeTypeConfig[type].color`).
+   - **Color:** The number uses the same color as that type in the graph and in the Components legend (from `nodeTypeConfig[type].color`).  
+   - **Clickable (when the type has a header filter):** Clicking a type card filters the constellation to show only that component type (or the filter category that includes it). See [Interaction: filtering from cards](#interaction-filtering-from-cards) below.
 
 Only types that have at least one node in the current `graphData` get a card. So if the BOM has no tools or no data nodes, there will be no “Tool” or “Data” card.
 
@@ -56,7 +58,23 @@ Again: only types that have at least one node in the current graph get a card.
 
 Changing or replacing `data.json` (e.g. with another AIBOM or an export from Snyk) and rebuilding will update both the graph and the card counts.
 
+## Interaction: filtering from cards
+
+The dashboard type cards are **connected to the header components filter**: clicking a type card applies that filter so the constellation shows only the corresponding component type(s).
+
+- **Total "Components" card:** Not clickable (showing a total count only).
+- **Type cards that map to a filter:** Clickable. **First click** sets the header filter to that type's category; **clicking the same card again** (when it's the only active filter) clears it to "All Components". For example:
+  - **Model** → filter "Models".
+  - **Agent** → filter "Agents".
+  - **MCP Server** / **MCP Client** → filter "MCP Servers" (both types).
+  - **Library** → filter "Libraries".
+  - **Service** → filter "Services".
+  - **Tool** / **MCP Resource** → filter "Tools & Resources" (both types).
+- **Type cards with no filter (e.g. Application, Data):** Not clickable; they only show the count.
+
+Clickable cards use hover styles (e.g. slightly stronger background and border), a tooltip ("Show only X" or "Clear filter (show all)" when that card is the active filter), and keyboard support (Enter/Space) for accessibility. The header filter dropdown and the dashboard cards stay in sync: after clicking a card, the dropdown shows that single filter as selected; clearing in the dropdown or by clicking the same card again both reset to all components.
+
 ## Implementation
 
 - **Data & types:** `src/lib/graph-data.ts` — `bomData`, `graphData`, `bomToGraphData()`, `getNodeType()`, `NodeType`, `nodeTypeConfig`, `constellationRingOrder`.
-- **UI:** `src/App.tsx` — overlay at `top-4 left-4` with the total Components card and a loop over `statsTypeOrder` rendering one card per type (label and color from `nodeTypeConfig`).
+- **UI:** `src/App.tsx` — overlay at `top-4 left-4` with the total Components card and a loop over `statsTypeOrder` rendering one card per type (label and color from `nodeTypeConfig`). Type cards that have a corresponding header filter id (via `getFilterIdForNodeType`) are rendered as buttons and set `selectedFilterIds` on click.

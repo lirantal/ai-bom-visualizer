@@ -16,6 +16,21 @@ const COMPONENT_FILTERS = [
   { id: 'tools', label: 'Tools & Resources' },
 ] as const;
 
+/** Map node type to header filter id; null if type has no filter (e.g. application, data). */
+function getFilterIdForNodeType(type: NodeType): string | null {
+  switch (type) {
+    case 'model': return 'models';
+    case 'agent': return 'agents';
+    case 'mcp-server':
+    case 'mcp-client': return 'servers';
+    case 'library': return 'libraries';
+    case 'service': return 'services';
+    case 'tool':
+    case 'mcp-resource': return 'tools';
+    default: return null;
+  }
+}
+
 export default function App() {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [showJSON, setShowJSON] = useState(false);
@@ -209,10 +224,27 @@ export default function App() {
             {statsTypeOrder.map((type) => {
               const config = nodeTypeConfig[type];
               const count = typeCounts[type] ?? 0;
+              const filterId = getFilterIdForNodeType(type);
+              const isClickable = filterId !== null;
+              const isOnlyFilterActive = isClickable && selectedFilterIds.size === 1 && selectedFilterIds.has(filterId!);
+              const handleCardClick = isClickable
+                ? () => setSelectedFilterIds(isOnlyFilterActive ? new Set() : new Set([filterId!]))
+                : undefined;
               return (
                 <div
                   key={type}
-                  className="bg-card/60 backdrop-blur-md rounded-md px-3 py-2 border border-border/30 shrink-0"
+                  role={isClickable ? 'button' : undefined}
+                  tabIndex={isClickable ? 0 : undefined}
+                  onClick={handleCardClick}
+                  onKeyDown={
+                    isClickable
+                      ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick?.(); } }
+                      : undefined
+                  }
+                  className={`bg-card/60 backdrop-blur-md rounded-md px-3 py-2 border border-border/30 shrink-0 ${
+                    isClickable ? 'cursor-pointer hover:bg-card/80 hover:border-border/50 transition-colors' : ''
+                  }`}
+                  title={isClickable ? (isOnlyFilterActive ? 'Clear filter (show all)' : `Show only ${config.label}`) : undefined}
                 >
                   <div className="text-lg font-semibold" style={{ color: config.color }}>
                     {count}
