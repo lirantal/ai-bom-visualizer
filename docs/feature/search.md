@@ -1,15 +1,15 @@
 # Search
 
-The header search box filters the constellation graph by component **type** and **name** using fuzzy matching.
+The header search box filters the constellation graph by component **type** and **name** using substring matching.
 
 ## Behavior
 
 - **Search input** — Type in the "Search components..." field to narrow the visible nodes.
 - **Keyboard shortcut** — Press **⌘K** (Mac) or **Ctrl+K** (Windows/Linux) from anywhere in the app to focus the search input. A **⌘K** hint is shown on the right side of the search box.
-- **Fuzzy match** — A query matches if every character of the query appears in order in the target text (case-insensitive). For example:
+- **Substring match** — A query matches only if it appears as a **contiguous substring** in the target text (case-insensitive). For example:
   - `gpt` matches "gpt-3.5-turbo", "gpt-4o-mini"
   - `blip` matches "Salesforce/blip-vqa-base"
-  - `openai` matches component names or labels containing those letters in order
+  - `deep` matches "deepseek-reasoner" or "api-docs.deepseek.com", but not "FLUX.1-dev-ControlNet-Union-Pro" (where d, e, e, p appear but not as the word "deep")
 - **What is matched** — The query is checked against:
   - Component **name** (short label and full name)
   - Component **type** (e.g. `model`, `mcp-server`) and its display label (e.g. "Model", "MCP Server")
@@ -17,5 +17,5 @@ The header search box filters the constellation graph by component **type** and 
 
 ## Implementation
 
-- **Utility:** `src/lib/fuzzy-match.ts` — `fuzzyMatch(query, text)` and `fuzzyMatchAny(query, texts)`.
+- **Utility:** `src/lib/fuzzy-match.ts` — `fuzzyMatch(query, text)` and `fuzzyMatchAny(query, texts)` use contiguous substring matching (case-insensitive).
 - **Graph:** `ConstellationGraph` accepts an optional `searchQuery` prop and uses it in the `filteredNodes` memo along with the existing `filter` (type) so only matching nodes and their edges are shown.
