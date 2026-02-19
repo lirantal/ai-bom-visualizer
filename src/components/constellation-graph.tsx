@@ -52,7 +52,7 @@ export const ConstellationGraph = forwardRef<ConstellationGraphHandle, {
   const isDragging = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
-  // Filter nodes by type (multi-select filter) and by search (fuzzy match on type + name)
+  // Filter nodes by type (multi-select filter) and by search (substring match on type + name)
   const filteredNodes = useMemo(() => {
     let nodes = graphData.nodes;
     if (selectedFilterIds.length > 0) {
