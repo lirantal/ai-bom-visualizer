@@ -2,6 +2,13 @@
 
 A single-page viewer for **CycloneDX AI Bill of Materials** (AI-BOM). Renders components (models, agents, MCP servers, libraries, etc.) and their dependencies as an interactive constellation graph. Built to output one self-contained **`dist/index.html`** — no server required.
 
+<img width="1280" height="1280" alt="screenshot-rocks Large" src="https://github.com/user-attachments/assets/82f356c3-b41c-4aec-8d41-613b1e4d0bbd" />
+
+
+## Deployed Version
+
+The AI-BOM Visualizer project is also deployed live here for public use: [https://ai-bom-visualizer.vercel.app](https://ai-bom-visualizer.vercel.app)
+
 ## Quick start
 
 ```bash
