@@ -42,6 +42,7 @@ jobs:
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1
         with:
+          cwd: packages/ai-bom-visualizer
           publish: npm run release
           version: npm run version
           commit: "chore: new release"
