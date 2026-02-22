@@ -4,7 +4,9 @@
   "description": "A Command-Line tool for an AI-BOM Visualizer",
   "types": "dist/main.d.ts",
   "type": "module",
-  "bin": "./dist/bin/cli.cjs",
+  "bin": {
+    "ai-bom-visualizer": "dist/bin/cli.cjs"
+  },
   "exports": {
     ".": {
       "import": {
@@ -67,7 +69,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lirantal/ai-bom-visualizer.git"
+    "url": "git+https://github.com/lirantal/ai-bom-visualizer.git"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",
