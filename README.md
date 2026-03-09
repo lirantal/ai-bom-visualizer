@@ -33,7 +33,7 @@ The CLI turns complex JSON reports into an interactive constellation graph—mak
 
 Watch a demo of the AIBOM CLI together with the Snyk CLI that generates the AIBOM payload:
 
-<video src=".github/aibom-demo.mov" controls width="600"></video>
+https://github.com/user-attachments/assets/54e02fd8-bca8-49ea-ac78-23752bfbaa58
 
 ## Deployed Version
 
