@@ -1,9 +1,23 @@
-# AI-BOM Viewer
+# AI-BOM Toolkit
 
-A single-page viewer for **CycloneDX AI Bill of Materials** (AI-BOM). Renders components (models, agents, MCP servers, libraries, etc.) and their dependencies as an interactive constellation graph. Built to output one self-contained **`dist/index.html`** — no server required.
+A toolkit and visualizer for **AI Bill of Materials** (AI-BOM). Pipe any CycloneDX AI-BOM JSON into the `aibom` CLI and get an interactive constellation graph.
+
+[![npm](https://img.shields.io/npm/v/aibom)](https://www.npmjs.com/package/aibom)
+[![license](https://img.shields.io/npm/l/aibom)](packages/aibom/LICENSE)
+[![codecov](https://img.shields.io/codecov/c/gh/lirantal/aibom/main)](https://codecov.io/gh/lirantal/aibom)
+[![CI](https://img.shields.io/github/actions/workflow/status/lirantal/aibom/ci.yml?branch=main&label=CI&logo=github)](https://github.com/lirantal/aibom/actions/workflows/ci.yml?query=branch%3Amain)
+[![Known Vulnerabilities](https://snyk.io/test/github/lirantal/aibom/badge.svg)](https://snyk.io/test/github/lirantal/aibom)
+[![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow)](packages/aibom/SECURITY.md)
+
+TL;DR how to use AI-BOM:
+
+```sh
+snyk aibom --experimental --json | npx aibom --view
+```
+
+_What it does: Snyk generates a CycloneDX AI-BOM as JSON, which is piped into the `aibom` CLI. The `--view` flag opens an interactive HTML visualization of your AI bill of materials in the browser._
 
 <img width="1280" height="1280" alt="screenshot-rocks Large" src="https://github.com/user-attachments/assets/82f356c3-b41c-4aec-8d41-613b1e4d0bbd" />
-
 
 ## Deployed Version
 
@@ -11,16 +25,16 @@ The AI-BOM Visualizer project is also deployed live here for public use: [https:
 
 ## Quickstart for AI BOM Visualizer package
 
-To visualize your AI-BOM in your own local environment, pipe a valid CycloneDX JSON data to the `ai-bom-visualizer` npm CLI utility as follows:
+To visualize your AI-BOM in your own local environment, pipe a valid CycloneDX JSON data to the `aibom` npm CLI utility as follows:
 
 ```sh
-cat data.json | npx ai-bom-visualizer --view
+cat data.json | npx aibom --view
 ```
 
 If you're using Snyk to create an AI-BOM:
 
 ```sh
-snyk aibom --experimental --json | npx ai-bom-visualizer --view
+snyk aibom --experimental --json | npx aibom --view
 ```
 
 ## Quickstart for Developers of AI BOM Visualizer website
