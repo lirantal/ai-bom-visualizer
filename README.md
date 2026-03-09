@@ -19,6 +19,22 @@ _What it does: Snyk generates a CycloneDX AI-BOM as JSON, which is piped into th
 
 <img width="1280" height="1280" alt="screenshot-rocks Large" src="https://github.com/user-attachments/assets/82f356c3-b41c-4aec-8d41-613b1e4d0bbd" />
 
+## Why AI-BOM
+
+AI-powered systems are increasingly widespread, but understanding what's inside those models, including their components, data sources, dependencies, and risks—remains difficult. The **AIBOM CLI** helps developers by:
+
+- **Transparency**: Instantly visualize the full "system composition" of your AI applications: AI models, datasets, libraries, and supply chain dependencies.
+- **Debugging & Operations**: Find complex model dependencies to speed up troubleshooting and locate source-code usage of AI components in your AI/ML projects.
+- **Adoption with Existing Tools**: Seamlessly integrate with tools like Snyk to generate and visualize AI-BOMs—no vendor lock-in, just pipe your JSON in.
+
+The CLI turns complex JSON reports into an interactive constellation graph—making architectural risk, component drift, and dependency relationships easily explorable for all engineers involved in building, deploying, or reviewing AI-enabled software.
+
+## Demo
+
+Watch a demo of the AIBOM CLI together with the Snyk CLI that generates the AIBOM payload:
+
+<video src=".github/aibom-demo.mov" controls width="600"></video>
+
 ## Deployed Version
 
 The AI-BOM Visualizer project is also deployed live here for public use: [https://ai-bom-visualizer.vercel.app](https://ai-bom-visualizer.vercel.app)
